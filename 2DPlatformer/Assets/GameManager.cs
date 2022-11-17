@@ -7,9 +7,12 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     public int MaxPlayerCount = 4;
     public int currentPlayersCount;
+
+    public Player[] players;
     private void Awake()
     {
         Instance = this;
+        players = new Player[MaxPlayerCount];
     }
     // Start is called before the first frame update
     void Start()

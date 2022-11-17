@@ -92,6 +92,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GameManager.Instance.players[GameManager.Instance.currentPlayersCount] = this;
         GameManager.Instance.currentPlayersCount++;
         r = GetComponent<Rigidbody2D>();
         box = GetComponent<BoxCollider2D>();
@@ -286,13 +287,13 @@ public class Player : MonoBehaviour
     }
     void Die() {
         isDead = true;
+        box.enabled = false;
+        r.gravityScale = 0;
         spriteAnim.SetBool("IsDead", true);
     }
     public void PostDeath() {
         StartCoroutine(DeathFade());
         spriteAnim.enabled = false;
-        box.enabled = false;
-        r.gravityScale = 0;
     }
     IEnumerator DeathFade() {
         SpriteRenderer sprRender = spriteAnim.GetComponent<SpriteRenderer>();

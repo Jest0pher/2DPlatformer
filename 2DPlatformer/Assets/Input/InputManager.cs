@@ -6,16 +6,7 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     public static InputManager Instance;
-
-    public InputActionMap input;
-    [SerializeField] private float horizontalInput;
-    [SerializeField] private bool jumpInput;
-
-    public float HorizontalInput { get { return horizontalInput; } set { horizontalInput = Mathf.Clamp(value, -1, 1); } }
-    public bool JumpInput { get { return jumpInput; } set { jumpInput = value; } }
-
-    [field: SerializeField]
-    public float mobileInput { get; set; }
+    PlayerInputManager pInputManager;
     private void Awake()
     {
         Instance = this;
@@ -23,14 +14,11 @@ public class InputManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        pInputManager = GetComponent<PlayerInputManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //HorizontalInput = Input.GetAxisRaw("Horizontal") + mobileInput;
-        //HorizontalInput = input.Player1.Horizontal.ReadValue<float>();
-        JumpInput = Input.GetAxisRaw("Jump") > 0;
     }
 }

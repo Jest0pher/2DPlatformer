@@ -5,14 +5,17 @@ using UnityEngine.InputSystem;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public int MaxPlayerCount = 4;
-    public int currentPlayersCount;
+    public static int MaxPlayerCount = 4;
+    public static int currentPlayersCount;
+    public static InputDevice[] playerInputs = { null, null, null, null};
 
-    public Player[] players;
+    public List<Player> players;
+    public PlayerInputManager pInputManager;
     private void Awake()
     {
         Instance = this;
-        players = new Player[MaxPlayerCount];
+        players = new List<Player>(MaxPlayerCount);
+        //playerInputs = new InputDevice[MaxPlayerCount];
     }
     // Start is called before the first frame update
     void Start()
@@ -23,6 +26,5 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 }

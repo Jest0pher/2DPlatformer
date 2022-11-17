@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
     public PlayerInput pInput;
 
     public Players PlayerID;
-
+    static int numPlayersLoaded = 0;
     [Space]
     [Header("Input")]
     [SerializeField] private float horizontalInput;
@@ -60,6 +60,8 @@ public class Player : MonoBehaviour
 
     [Space(50)]
     [Header("Health")]
+    [SerializeField] SpriteRenderer healthBar;
+    Material healthBarMat;
     public float maxHP = 100;
     [SerializeField] private float hp;
     public float HP { get { return hp; } set { hp = Mathf.Clamp(value, 0, maxHP);} }
@@ -92,10 +94,12 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameManager.Instance.players[GameManager.Instance.currentPlayersCount] = this;
-        GameManager.Instance.currentPlayersCount++;
+        PlayerID = (Players)numPlayersLoaded++;
+        GameManager.Instance.players.Add(this);
+
         r = GetComponent<Rigidbody2D>();
         box = GetComponent<BoxCollider2D>();
+        healthBarMat = healthBar.material;
         jumpCountRuntime = jumps;
         wallJumpCountRuntime = wallJumps;
         attackTimer = attackTime;
@@ -114,6 +118,7 @@ public class Player : MonoBehaviour
     {
         if (!isDead)
         {
+            HealthBar();
             if (isDamaged) {
                 damageTimer -= Time.deltaTime;
                 if (damageTimer <= 0) {
@@ -262,6 +267,10 @@ public class Player : MonoBehaviour
             }
         }
     }
+    void HealthBar() { 
+        healthBarMat.SetFloat("_HealthPercentage", HP/maxHP);
+        healthBar.flipX = !facingRight;
+    }
     #endregion
 
 
@@ -290,6 +299,7 @@ public class Player : MonoBehaviour
         box.enabled = false;
         r.gravityScale = 0;
         spriteAnim.SetBool("IsDead", true);
+        healthBar.gameObject.SetActive(false);
     }
     public void PostDeath() {
         StartCoroutine(DeathFade());
@@ -305,7 +315,8 @@ public class Player : MonoBehaviour
             sprMat.SetFloat("_Percent", percentage);
         }
         yield return new WaitForSeconds(1);
-        this.enabled = false;
+        GameManager.Instance.players.Remove(this);
+        Destroy(gameObject);
     }
     #endregion
 

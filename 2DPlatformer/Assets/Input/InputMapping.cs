@@ -145,6 +145,120 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""CharacterSelect"",
+            ""id"": ""0c2d8d1d-7180-43b9-8b73-4194a74492b1"",
+            ""actions"": [
+                {
+                    ""name"": ""Move"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""fc2401b5-fa25-4fbd-95aa-888faef40762"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Select"",
+                    ""type"": ""Button"",
+                    ""id"": ""508d0dc6-0eaa-42f8-8684-94ddc3967ce1"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""6e17e24e-860c-4fee-8062-c72722cf2f66"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""cb416c2b-41e6-4fb4-87fa-e74e6a886192"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""39e478f5-53c3-473d-9026-836a6266daf6"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""030ac02f-1e13-4ee2-aa13-bfe70e28e241"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""744029e7-65c8-445d-95a6-9fe22f4b68c4"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""7eba1dac-bbd7-42be-9990-d8d53752f47e"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""09226d64-8d99-489d-b641-64a87bc1e0c4"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c7b52876-a2b8-42c4-b933-09acb4acac4e"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -177,6 +291,10 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
         m_Player_Horizontal = m_Player.FindAction("Horizontal", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
+        // CharacterSelect
+        m_CharacterSelect = asset.FindActionMap("CharacterSelect", throwIfNotFound: true);
+        m_CharacterSelect_Move = m_CharacterSelect.FindAction("Move", throwIfNotFound: true);
+        m_CharacterSelect_Select = m_CharacterSelect.FindAction("Select", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -281,6 +399,47 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // CharacterSelect
+    private readonly InputActionMap m_CharacterSelect;
+    private ICharacterSelectActions m_CharacterSelectActionsCallbackInterface;
+    private readonly InputAction m_CharacterSelect_Move;
+    private readonly InputAction m_CharacterSelect_Select;
+    public struct CharacterSelectActions
+    {
+        private @InputMapping m_Wrapper;
+        public CharacterSelectActions(@InputMapping wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Move => m_Wrapper.m_CharacterSelect_Move;
+        public InputAction @Select => m_Wrapper.m_CharacterSelect_Select;
+        public InputActionMap Get() { return m_Wrapper.m_CharacterSelect; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(CharacterSelectActions set) { return set.Get(); }
+        public void SetCallbacks(ICharacterSelectActions instance)
+        {
+            if (m_Wrapper.m_CharacterSelectActionsCallbackInterface != null)
+            {
+                @Move.started -= m_Wrapper.m_CharacterSelectActionsCallbackInterface.OnMove;
+                @Move.performed -= m_Wrapper.m_CharacterSelectActionsCallbackInterface.OnMove;
+                @Move.canceled -= m_Wrapper.m_CharacterSelectActionsCallbackInterface.OnMove;
+                @Select.started -= m_Wrapper.m_CharacterSelectActionsCallbackInterface.OnSelect;
+                @Select.performed -= m_Wrapper.m_CharacterSelectActionsCallbackInterface.OnSelect;
+                @Select.canceled -= m_Wrapper.m_CharacterSelectActionsCallbackInterface.OnSelect;
+            }
+            m_Wrapper.m_CharacterSelectActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Move.started += instance.OnMove;
+                @Move.performed += instance.OnMove;
+                @Move.canceled += instance.OnMove;
+                @Select.started += instance.OnSelect;
+                @Select.performed += instance.OnSelect;
+                @Select.canceled += instance.OnSelect;
+            }
+        }
+    }
+    public CharacterSelectActions @CharacterSelect => new CharacterSelectActions(this);
     private int m_KeyboardSchemeIndex = -1;
     public InputControlScheme KeyboardScheme
     {
@@ -304,5 +463,10 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
         void OnHorizontal(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
+    }
+    public interface ICharacterSelectActions
+    {
+        void OnMove(InputAction.CallbackContext context);
+        void OnSelect(InputAction.CallbackContext context);
     }
 }

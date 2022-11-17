@@ -11,6 +11,8 @@ public class DynamicCamera : MonoBehaviour
     public float paddingPercentage = .1f;
     public float scalar;
     public Rect rect;
+
+    bool onFrameDelay;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,11 +23,16 @@ public class DynamicCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!onFrameDelay) {
+            onFrameDelay = true;
+            return;
+        }
+
         float xMax = GameManager.Instance.players[0].transform.position.x;
         float xMin = GameManager.Instance.players[0].transform.position.x;
         float yMax = GameManager.Instance.players[0].transform.position.y;
         float yMin = GameManager.Instance.players[0].transform.position.y;
-        for (int i = 0; i < GameManager.Instance.currentPlayersCount; i++) {
+        for (int i = 0; i < GameManager.Instance.players.Count; i++) {
             Vector3 pos = GameManager.Instance.players[i].transform.position;
             if (pos.x > xMax)
             {
@@ -55,7 +62,7 @@ public class DynamicCamera : MonoBehaviour
         temp += (Vector3)rect.center;
         transform.position = Vector3.Lerp(transform.position, temp, Time.deltaTime*scalar);
 
-        if (GameManager.Instance.currentPlayersCount > 1)
+        if (GameManager.currentPlayersCount > 1)
         {
             float adjustedOrtho = cam.orthographicSize * (1 - paddingPercentage);
             float camHeight = 2f * adjustedOrtho;

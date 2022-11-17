@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     public static InputManager Instance;
-    PlayerInputManager pInputManager;
+    //public PlayerInputManager pInputManager;
     private void Awake()
     {
         Instance = this;
@@ -14,11 +14,12 @@ public class InputManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        pInputManager = GetComponent<PlayerInputManager>();
+        //pInputManager = GetComponent<PlayerInputManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        
     }
 }

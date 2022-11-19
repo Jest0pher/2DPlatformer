@@ -102,6 +102,7 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject topTransform;
     [SerializeField] LayerMask groundMask;
     [SerializeField] LayerMask playerMask;
+    [SerializeField] LayerMask outerBorder;
 
     [Space(50)]
     [Header("Debug")]
@@ -198,6 +199,12 @@ public class Player : MonoBehaviour
         {
             jumpCountRuntime = jumps;
             wallJumpCountRuntime = wallJumps;
+        }
+        bool isOnOuter = Physics2D.Raycast(feetTransform.transform.position, Vector3.down, surroundDistance, outerBorder) ||
+                     Physics2D.Raycast(feetTransform.transform.position + Vector3.right * box.size.x / 2, Vector3.down, surroundDistance, outerBorder) ||
+                     Physics2D.Raycast(feetTransform.transform.position + Vector3.left * box.size.x / 2, Vector3.down, surroundDistance, outerBorder);
+        if (isOnOuter) {
+            groundBox.enabled = true;
         }
 
         if (groundBox.enabled)

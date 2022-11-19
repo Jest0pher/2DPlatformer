@@ -431,10 +431,13 @@ MonoBehaviour:
   topTransform: {fileID: 829614075414736914}
   groundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 1088
   playerMask:
     serializedVersion: 2
     m_Bits: 256
+  outerBorder:
+    serializedVersion: 2
+    m_Bits: 1024
   debug: 0
 --- !u!114 &2506405474314568674
 MonoBehaviour:

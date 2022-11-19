@@ -1282,7 +1282,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
   - {fileID: 2506405474314568680, guid: c6f0ad0fb7bf50e48894cfc8ef608bb4, type: 3}
-  - {fileID: 3648257404788021336, guid: c67785fd15b042a46b71d5dbddf8a487, type: 3}
+  - {fileID: 7713115421551493950, guid: 6ca0d4cbd4ec73440a7a0233b0b3dd9a, type: 3}
 --- !u!114 &1380995926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1308,10 +1308,10 @@ MonoBehaviour:
   m_JoinAction:
     m_UseReference: 0
     m_Action:
-      m_Name: 
+      m_Name: Join
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: 
+      m_Id: 4b6b442d-6e5e-47db-bd77-87905c4d36f2
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []

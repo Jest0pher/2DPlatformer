@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
 {
     Rigidbody2D r;
     BoxCollider2D box;
+    [SerializeField] BoxCollider2D groundBox;
     public PlayerInput pInput;
 
     public Players PlayerID;
@@ -22,6 +23,9 @@ public class Player : MonoBehaviour
     public float HorizontalInput { get { return horizontalInput; } set { horizontalInput = Mathf.Clamp(value, -1, 1); } }
     [SerializeField] private bool jumpInput;
     public bool JumpInput { get { return jumpInput; } set { jumpInput = value; } }
+    [SerializeField] private bool downInput;
+    bool prevDownInput;
+    public bool DownInput { get { return downInput; } set { downInput = value; } }
     [SerializeField] private bool attackInput;
     public bool AttackInput { get { return attackInput; } set { attackInput = value; } }
     
@@ -42,6 +46,10 @@ public class Player : MonoBehaviour
     public float maxHorSpeed;
     public float maxVertSpeed;
     private Vector2 prevVel = Vector2.zero;
+    
+    [Space(50)]
+    [Header("Slamming")]
+    public bool slamming;
 
     [Space(50)]
     [Header("Jumping")]
@@ -57,6 +65,10 @@ public class Player : MonoBehaviour
     [SerializeField] private int wallJumpCountRuntime;
     public float wallJumpSpeed;
     public float gravScaleOnWall;
+    [Space]
+    public bool groundAbove;
+    public bool inGround;
+    ContactFilter2D groundContact;
 
     [Space(50)]
     [Header("Health")]
@@ -76,6 +88,7 @@ public class Player : MonoBehaviour
     public float attackTime;
     float attackTimer;
     [SerializeField] BoxCollider2D boxRaycast;
+    ContactFilter2D playerRaycastContact;
 
     [Space(50)]
     [Header("Sprite")]
@@ -86,7 +99,9 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject frontTransform;
     [SerializeField] GameObject backTransform;
     [SerializeField] GameObject feetTransform;
+    [SerializeField] GameObject topTransform;
     [SerializeField] LayerMask groundMask;
+    [SerializeField] LayerMask playerMask;
 
     [Space(50)]
     [Header("Debug")]
@@ -106,6 +121,22 @@ public class Player : MonoBehaviour
         HP = maxHP;
         frontTransform.transform.position = box.transform.position + (Vector3)box.size / 2.0f;
         backTransform.transform.position = box.transform.position - (Vector3)box.size / 2.0f;
+        playerRaycastContact = new ContactFilter2D();
+        playerRaycastContact.useDepth = false;
+        playerRaycastContact.useNormalAngle = false;
+        playerRaycastContact.useOutsideDepth = false;
+        playerRaycastContact.useOutsideNormalAngle = false;
+        playerRaycastContact.useTriggers = false;
+        playerRaycastContact.layerMask = playerMask;
+        playerRaycastContact.useLayerMask = true;
+        groundContact = new ContactFilter2D();
+        groundContact.useDepth = false;
+        groundContact.useNormalAngle = false;
+        groundContact.useOutsideDepth = false;
+        groundContact.useOutsideNormalAngle = false;
+        groundContact.useTriggers = false;
+        groundContact.layerMask = groundMask;
+        groundContact.useLayerMask = true;
     }
 
     private void OnDrawGizmos()
@@ -127,13 +158,16 @@ public class Player : MonoBehaviour
             }
             moveDir = Vector2.zero;
             CheckSurroundings();
+            InGround();
             Attack();
             Jump();
+            GroundAbove();
             Move();
             SetAnim();
             r.velocity = moveDir;
             Flip();
             prevVel = r.velocity;
+            prevDownInput = DownInput;
             if (debug)
             {
                 Debug.DrawLine(transform.position - Vector3.one * .5f, transform.position + Vector3.left * .5f + Vector3.up * .5f, Color.red);
@@ -153,19 +187,34 @@ public class Player : MonoBehaviour
         Debug.DrawRay(feetTransform.transform.position + Vector3.right * box.size.x / 2, Vector3.down * surroundDistance, Color.red);
         Debug.DrawRay(feetTransform.transform.position + Vector3.left * box.size.x / 2, Vector3.down * surroundDistance, Color.red);
 
+        groundAbove = Physics2D.Raycast(topTransform.transform.position, Vector3.up, surroundDistance, groundMask) ||
+                      Physics2D.Raycast(topTransform.transform.position + Vector3.right * box.size.x / 3, Vector3.up, surroundDistance, groundMask) ||
+                      Physics2D.Raycast(topTransform.transform.position + Vector3.left * box.size.x / 3, Vector3.up, surroundDistance, groundMask);
+        Debug.DrawRay(topTransform.transform.position, Vector3.up * surroundDistance, Color.red);
+        Debug.DrawRay(topTransform.transform.position + Vector3.right * box.size.x / 3, Vector3.up * surroundDistance, Color.red);
+        Debug.DrawRay(topTransform.transform.position + Vector3.left * box.size.x / 3, Vector3.up * surroundDistance, Color.red);
+
         if (isGrounded)
         {
             jumpCountRuntime = jumps;
             wallJumpCountRuntime = wallJumps;
         }
 
-        againstLeftWall =  facingRight ? Physics2D.OverlapCircle(backTransform.transform.position, surroundDistance, groundMask) : Physics2D.OverlapCircle(frontTransform.transform.position, surroundDistance, groundMask); 
-        againstRightWall = facingRight ? Physics2D.OverlapCircle(frontTransform.transform.position, surroundDistance, groundMask) : Physics2D.OverlapCircle(backTransform.transform.position, surroundDistance, groundMask);
-
-        againstWall = false;
-        if (againstLeftWall || againstRightWall)
+        if (groundBox.enabled)
         {
-            againstWall = true;
+            againstLeftWall = facingRight ? Physics2D.OverlapCircle(backTransform.transform.position, surroundDistance, groundMask) : Physics2D.OverlapCircle(frontTransform.transform.position, surroundDistance, groundMask);
+            againstRightWall = facingRight ? Physics2D.OverlapCircle(frontTransform.transform.position, surroundDistance, groundMask) : Physics2D.OverlapCircle(backTransform.transform.position, surroundDistance, groundMask);
+
+            againstWall = false;
+            if (againstLeftWall || againstRightWall)
+            {
+                againstWall = true;
+            }
+        }
+        else {
+            againstLeftWall = false;
+            againstRightWall = false;
+            againstWall = false;
         }
     }
     void Flip() {
@@ -220,6 +269,17 @@ public class Player : MonoBehaviour
             r.gravityScale = 1;
         }
         moveDir += Vector2.up * r.velocity;
+        if (DownInput && !prevDownInput) {
+            if (isGrounded)
+            {
+                isGrounded = false;
+                groundBox.enabled = false;
+            }
+            else
+            {
+                //Slam
+            }
+        }
         moveDir.Set(Mathf.Clamp(moveDir.x, -maxHorSpeed, maxHorSpeed), Mathf.Clamp(moveDir.y, -maxVertSpeed, maxVertSpeed));
     }
     void Attack() {
@@ -271,16 +331,52 @@ public class Player : MonoBehaviour
         healthBarMat.SetFloat("_HealthPercentage", HP/maxHP);
         healthBar.flipX = !facingRight;
     }
+    void InGround() { 
+        List<Collider2D> colliders = new List<Collider2D>();
+        int num = r.OverlapCollider(groundContact, colliders);
+        print(num);
+        foreach (Collider2D c in colliders) {
+            print(c.name);
+        }
+        if (num > 0)
+        {
+            inGround = true;
+        }
+        else
+        {
+            inGround = false;
+        }
+        
+    }
+    void GroundAbove() { 
+
+        if (groundAbove && inGround) {
+            groundBox.enabled = false;
+        }
+
+        if (!groundAbove && !inGround) {
+            groundBox.enabled = true;
+        }
+
+        if(groundBox.enabled == false)
+        {
+            isGrounded = false;
+        }
+        
+    }
     #endregion
 
 
     #region Event Functions
     public void AttackRaycast() {
-        RaycastHit2D hit = Physics2D.BoxCast(boxRaycast.transform.position, boxRaycast.size, 0, Vector2.zero);
-        if (hit.collider != null) {
-            if (hit.collider.tag == "Player") {
-                Player player = hit.collider.GetComponent<Player>();
-                player.TakeDamage(10);
+        RaycastHit2D[] hits = new RaycastHit2D[3];
+        int hitNum = Physics2D.BoxCast(boxRaycast.transform.position, boxRaycast.size, 0, Vector2.zero, playerRaycastContact, hits);
+        foreach (RaycastHit2D hit in hits){
+            if (hit.collider != null) {
+                if (hit.collider.tag == "Player") {
+                    Player player = hit.collider.GetComponent<Player>();
+                    player.TakeDamage(10);
+                }
             }
         }
     }
@@ -329,12 +425,16 @@ public class Player : MonoBehaviour
 
     public void ReadJump(InputAction.CallbackContext obj)
     {
-        JumpInput = obj.ReadValue<float>() > 0;
+        JumpInput = obj.ReadValueAsButton();
+    }
+
+    public void ReadDown(InputAction.CallbackContext obj) {
+        DownInput = obj.ReadValueAsButton();
     }
 
     public void ReadAttack(InputAction.CallbackContext obj)
     {
-        AttackInput = obj.ReadValue<float>() > 0;
+        AttackInput = obj.ReadValueAsButton();
     }
     #endregion
 }

@@ -19,12 +19,9 @@ public class CharacterPreview : MonoBehaviour
         prevModelAbility = abilitySelector.Model;
     }
 
-    private void Update()
-    {
-        if (prevModelAbility != abilitySelector.Model) {
-            previews[(int)prevModelAbility].SetActive(false);
-            previews[(int)abilitySelector.Model].SetActive(true);
-            prevModelAbility = abilitySelector.Model;
-        }
+    public void ChangeCharacter(int index) {
+        previews[(int)prevModelAbility].SetActive(false);
+        previews[index].SetActive(true);
+        prevModelAbility = (ModelAbility)index;
     }
 }

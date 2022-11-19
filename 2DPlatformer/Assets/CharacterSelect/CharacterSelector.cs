@@ -9,26 +9,25 @@ public class CharacterSelector : MonoBehaviour
     public Selector currentSelector;
     int selectedIndex;
     public List<Selector> selectors;
+    public int playerID = 0;
+    public bool isReady;
 
     int prevHorVal = 0;
     int prevVertVal = 0;
     bool prevConfirm = false;
     bool prevBack = false;
+
+    bool started = false;
     // Start is called before the first frame update
     void Start()
     {
         playerInput = GetComponent<PlayerInput>();
-        CharacterSelectManager.Instance.PlayerConnect(gameObject);
-        for (int i = 0; i < GameManager.currentPlayersCount; i++)
-        {
-            if (GameManager.playerInputs[i] == null)
-            {
-                GameManager.playerInputs[i] = playerInput.devices[0];
-            }
-        }
+        CharacterSelectManager.Instance.PlayerConnect(this, playerInput.devices[0]);
         selectedIndex = 0;
         currentSelector = selectors[0];
-        highlight.transform.position = currentSelector.transform.position;
+        highlight.transform.position = currentSelector.transform.position + Vector3.back;
+        started = true;
+        GameManager.Instance.PrintPlayerInfo();
     }
 
     public void NavigationInput(InputAction.CallbackContext obj) {
@@ -81,6 +80,7 @@ public class CharacterSelector : MonoBehaviour
         {
             AbilitySelector castedSelector = (AbilitySelector)currentSelector;
             castedSelector.CycleLeft();
+            GameManager.Instance.PrintPlayerInfo();
         }
     }
 
@@ -90,6 +90,7 @@ public class CharacterSelector : MonoBehaviour
         {
             AbilitySelector castedSelector = (AbilitySelector)currentSelector;
             castedSelector.CycleRight();
+            GameManager.Instance.PrintPlayerInfo();
         }
     }
     public void ConfirmInput(InputAction.CallbackContext obj) {
@@ -99,6 +100,7 @@ public class CharacterSelector : MonoBehaviour
             {
                 ButtonSelector castedSelector = (ButtonSelector)currentSelector;
                 castedSelector.Select();
+                isReady = !isReady;
             }
         }
         prevConfirm = val;
@@ -107,10 +109,21 @@ public class CharacterSelector : MonoBehaviour
         bool val = obj.ReadValueAsButton();
         if (val && val != prevBack)
         {
-            if (currentSelector.selectorType == SelectorType.Button)
+            if (isReady)
             {
-                ButtonSelector castedSelector = (ButtonSelector)currentSelector;
-                castedSelector.Back();
+                if (currentSelector.selectorType == SelectorType.Button)
+                {
+                    ButtonSelector castedSelector = (ButtonSelector)currentSelector;
+                    castedSelector.Select();
+                }
+            }
+            else {
+                if (GameManager.playerInfo.Count > 0 && started)
+                {
+                    CharacterSelectManager.Instance.PlayerDisconnect(this);
+                    GameManager.Instance.PrintPlayerInfo();
+                    Destroy(gameObject);
+                }
             }
         }
         prevBack = val;

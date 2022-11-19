@@ -62,7 +62,7 @@ public class DynamicCamera : MonoBehaviour
         temp += (Vector3)rect.center;
         transform.position = Vector3.Lerp(transform.position, temp, Time.deltaTime*scalar);
 
-        if (GameManager.currentPlayersCount > 1)
+        if (GameManager.Instance.players.Count > 1)
         {
             float adjustedOrtho = cam.orthographicSize * (1 - paddingPercentage);
             float camHeight = 2f * adjustedOrtho;

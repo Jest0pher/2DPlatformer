@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectorType: 0
+  characterSelector: {fileID: 2558042139507924432}
   text: {fileID: 5210104569356246822}
   leftArrow: {fileID: 9201329810515290842}
   rightArrow: {fileID: 2510431670789579854}
@@ -56,6 +57,7 @@ MonoBehaviour:
   lightAbility: 0
   heavyAbility: 0
   passiveAbility: 0
+  characterPreview: {fileID: 0}
 --- !u!1 &1041573051643861133
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,6 +106,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectorType: 0
+  characterSelector: {fileID: 2558042139507924432}
   text: {fileID: 319156429575361347}
   leftArrow: {fileID: 7901489533943459591}
   rightArrow: {fileID: 3569832984710236130}
@@ -112,6 +115,7 @@ MonoBehaviour:
   lightAbility: 0
   heavyAbility: 0
   passiveAbility: 0
+  characterPreview: {fileID: 4090344905033216343}
 --- !u!1 &1153571565334515864
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,6 +161,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectorType: 1
+  characterSelector: {fileID: 2558042139507924432}
 --- !u!1 &3138420371502985500
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,6 +795,7 @@ MonoBehaviour:
   - {fileID: 3634013946476579266}
   - {fileID: 1220939719442589428}
   - {fileID: 4658764489212889019}
+  playerID: 0
 --- !u!1 &6190109962338391955
 GameObject:
   m_ObjectHideFlags: 0
@@ -838,6 +844,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectorType: 0
+  characterSelector: {fileID: 2558042139507924432}
   text: {fileID: 5424990635998232397}
   leftArrow: {fileID: 5379279069661864443}
   rightArrow: {fileID: 5735189091479433852}
@@ -846,6 +853,7 @@ MonoBehaviour:
   lightAbility: 0
   heavyAbility: 0
   passiveAbility: 0
+  characterPreview: {fileID: 0}
 --- !u!1 &6487867061989968431
 GameObject:
   m_ObjectHideFlags: 0
@@ -1240,6 +1248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectorType: 0
+  characterSelector: {fileID: 2558042139507924432}
   text: {fileID: 3668348635988388188}
   leftArrow: {fileID: 3816381324567218725}
   rightArrow: {fileID: 1840677301928443285}
@@ -1248,6 +1257,7 @@ MonoBehaviour:
   lightAbility: 0
   heavyAbility: 0
   passiveAbility: 0
+  characterPreview: {fileID: 0}
 --- !u!1001 &173847091912409216
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1697,6 +1707,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6064124656420608615, guid: e9246fca1bfc98549a9f9e53e4cd2889, type: 3}
   m_PrefabInstance: {fileID: 7369434444062179808}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4090344905033216343 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6811323428408111287, guid: e9246fca1bfc98549a9f9e53e4cd2889, type: 3}
+  m_PrefabInstance: {fileID: 7369434444062179808}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ee7a326bbc1c648a7343c21b40562d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7644984198381602101
 PrefabInstance:
   m_ObjectHideFlags: 0

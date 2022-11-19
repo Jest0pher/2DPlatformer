@@ -90,6 +90,39 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
+                    ""name"": ""1D Axis Keyboard"",
+                    ""id"": ""1c0de565-2ac7-47f1-9108-c9873799ccfd"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Horizontal"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""24b7b0e5-76de-441e-940c-220c692a7ae3"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard2"",
+                    ""action"": ""Horizontal"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""2b273e3e-98e6-4568-a8d7-07710f5f341b"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard2"",
+                    ""action"": ""Horizontal"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
                     ""name"": """",
                     ""id"": ""0a05884d-997f-49d9-a8d0-07bcd70c373a"",
                     ""path"": ""<Gamepad>/leftStick/x"",
@@ -124,11 +157,33 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""14b9fb64-43f5-4a22-8484-150300bf0f22"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard2"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""45e13437-feb3-413e-80f5-0f8f35f58c55"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8158908c-2f54-49ce-8f3b-1b845bc3757c"",
+                    ""path"": ""<Keyboard>/numpad0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard2"",
                     ""action"": ""Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -328,7 +383,7 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/upArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Keyboard"",
+                    ""groups"": ""Keyboard&Mouse;Keyboard2"",
                     ""action"": ""Navigate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -350,7 +405,7 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/downArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Keyboard"",
+                    ""groups"": ""Keyboard&Mouse;Keyboard2"",
                     ""action"": ""Navigate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -372,7 +427,7 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/leftArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Keyboard"",
+                    ""groups"": ""Keyboard&Mouse;Keyboard2"",
                     ""action"": ""Navigate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -394,7 +449,7 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/rightArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Keyboard"",
+                    ""groups"": ""Keyboard&Mouse;Keyboard2"",
                     ""action"": ""Navigate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -406,6 +461,17 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a63d06ba-589b-4bf0-8be3-9e4bb32186f6"",
+                    ""path"": ""<Keyboard>/numpad0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard2"",
                     ""action"": ""Submit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -428,6 +494,17 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""655b3293-0bd5-4d31-8bce-78bd9fe27bd5"",
+                    ""path"": ""<Keyboard>/numpad1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard2"",
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -468,6 +545,11 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
                     ""isOR"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Keyboard2"",
+            ""bindingGroup"": ""Keyboard2"",
+            ""devices"": []
         }
     ]
 }");
@@ -650,6 +732,15 @@ public partial class @InputMapping : IInputActionCollection2, IDisposable
         {
             if (m_GamepadSchemeIndex == -1) m_GamepadSchemeIndex = asset.FindControlSchemeIndex("Gamepad");
             return asset.controlSchemes[m_GamepadSchemeIndex];
+        }
+    }
+    private int m_Keyboard2SchemeIndex = -1;
+    public InputControlScheme Keyboard2Scheme
+    {
+        get
+        {
+            if (m_Keyboard2SchemeIndex == -1) m_Keyboard2SchemeIndex = asset.FindControlSchemeIndex("Keyboard2");
+            return asset.controlSchemes[m_Keyboard2SchemeIndex];
         }
     }
     public interface IPlayerActions

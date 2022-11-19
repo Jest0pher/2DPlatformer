@@ -9,4 +9,5 @@ public enum SelectorType {
 public class Selector : MonoBehaviour
 {
     public SelectorType selectorType;
+    public CharacterSelector characterSelector;
 }

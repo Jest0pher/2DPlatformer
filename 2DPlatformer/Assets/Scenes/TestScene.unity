@@ -1230,8 +1230,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39b7c0e503de4774f88f2e68dbe29b1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  warriorPrefab: {fileID: 2506405474314568680, guid: c6f0ad0fb7bf50e48894cfc8ef608bb4, type: 3}
-  knightPrefab: {fileID: 3648257404788021336, guid: c67785fd15b042a46b71d5dbddf8a487, type: 3}
+  prefabs:
+  - {fileID: 2506405474314568680, guid: c6f0ad0fb7bf50e48894cfc8ef608bb4, type: 3}
+  - {fileID: 3648257404788021336, guid: c67785fd15b042a46b71d5dbddf8a487, type: 3}
 --- !u!114 &1380995926
 MonoBehaviour:
   m_ObjectHideFlags: 0

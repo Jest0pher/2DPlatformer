@@ -5,17 +5,16 @@ using UnityEngine.InputSystem;
 public class SpawnPlayers : MonoBehaviour
 {
     PlayerInputManager pInputManager;
-    [SerializeField] GameObject warriorPrefab;
-    [SerializeField] GameObject knightPrefab;
+    public List<GameObject> prefabs;
     // Start is called before the first frame update
     void Start()
     {
 
         pInputManager = GetComponent<PlayerInputManager>();
         //Load Unique Player Data with a passed struct
-        for (int i = 0; i < GameManager.currentPlayersCount; i++) {
-            pInputManager.playerPrefab = i == 0 ? warriorPrefab : knightPrefab;
-            pInputManager.JoinPlayer(i, -1, null, GameManager.playerInputs[i]);
+        for (int i = 0; i < GameManager.playerInfo.Count; i++) {
+            pInputManager.playerPrefab = prefabs[(int)GameManager.playerInfo[i].model];
+            pInputManager.JoinPlayer(i, -1, null, GameManager.playerInfo[i].pInput);
         }
         Destroy(this);
     }

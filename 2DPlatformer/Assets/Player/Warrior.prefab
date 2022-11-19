@@ -384,7 +384,7 @@ MonoBehaviour:
   isDamaged: 0
   damageTime: 1
   isAttacking: 0
-  attackTime: 0.5
+  attackTime: 1
   boxRaycast: {fileID: 2506405473176065710}
   spriteAnim: {fileID: 2506405474809152958}
   frontTransform: {fileID: 2506405473325985027}
@@ -467,6 +467,18 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: b05bddda-4a9f-4def-9ce1-aecb50e71ae7
     m_ActionName: Player1/Attack[/Keyboard/e,/XInputControllerWindows/buttonWest]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c924e4a4-3912-4ba2-87c7-44d54c2e1e12
+    m_ActionName: CharacterSelect/Navigate[/XInputControllerWindows/leftStick/up,/XInputControllerWindows/leftStick/down,/XInputControllerWindows/leftStick/left,/XInputControllerWindows/leftStick/right,/XInputControllerWindows/dpad,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: f89c9018-7fb2-46be-883d-c8d6eb494b4e
+    m_ActionName: CharacterSelect/Submit[/Keyboard/space,/Keyboard/numpad0,/XInputControllerWindows/buttonSouth]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: a30f0c7c-51db-47f6-9148-5c31d4b02550
+    m_ActionName: CharacterSelect/Cancel[/Keyboard/escape,/Keyboard/numpad1,/XInputControllerWindows/buttonEast]
   m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

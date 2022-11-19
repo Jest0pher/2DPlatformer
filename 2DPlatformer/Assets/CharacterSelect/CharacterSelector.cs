@@ -27,7 +27,6 @@ public class CharacterSelector : MonoBehaviour
         currentSelector = selectors[0];
         highlight.transform.position = currentSelector.transform.position + Vector3.back;
         started = true;
-        GameManager.Instance.PrintPlayerInfo();
     }
 
     public void NavigationInput(InputAction.CallbackContext obj) {
@@ -80,7 +79,6 @@ public class CharacterSelector : MonoBehaviour
         {
             AbilitySelector castedSelector = (AbilitySelector)currentSelector;
             castedSelector.CycleLeft();
-            GameManager.Instance.PrintPlayerInfo();
         }
     }
 
@@ -90,7 +88,6 @@ public class CharacterSelector : MonoBehaviour
         {
             AbilitySelector castedSelector = (AbilitySelector)currentSelector;
             castedSelector.CycleRight();
-            GameManager.Instance.PrintPlayerInfo();
         }
     }
     public void ConfirmInput(InputAction.CallbackContext obj) {
@@ -98,9 +95,9 @@ public class CharacterSelector : MonoBehaviour
         if (val && val != prevConfirm) {
             if (currentSelector.selectorType == SelectorType.Button)
             {
-                ButtonSelector castedSelector = (ButtonSelector)currentSelector;
-                castedSelector.Select();
                 isReady = !isReady;
+                ButtonSelector castedSelector = (ButtonSelector)currentSelector;
+                castedSelector.SetButton(isReady);
             }
         }
         prevConfirm = val;
@@ -111,17 +108,17 @@ public class CharacterSelector : MonoBehaviour
         {
             if (isReady)
             {
+                isReady = false;
                 if (currentSelector.selectorType == SelectorType.Button)
                 {
                     ButtonSelector castedSelector = (ButtonSelector)currentSelector;
-                    castedSelector.Select();
+                    castedSelector.SetButton(false);
                 }
             }
             else {
                 if (GameManager.playerInfo.Count > 0 && started)
                 {
                     CharacterSelectManager.Instance.PlayerDisconnect(this);
-                    GameManager.Instance.PrintPlayerInfo();
                     Destroy(gameObject);
                 }
             }

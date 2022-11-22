@@ -46,10 +46,19 @@ public class Player : MonoBehaviour
     public float maxHorSpeed;
     public float maxVertSpeed;
     private Vector2 prevVel = Vector2.zero;
-    
+    public float prevInput;
+
     [Space(50)]
     [Header("Slamming")]
+    [SerializeField] CircleCollider2D slamCircle;
+    [SerializeField] ParticleSystem slamParticles;
     public bool slamming;
+    public bool slammed;
+    public float slamTime;
+    float slamTimer;
+    public float slammingSpeed;
+    public float slamImpactPushVel;
+    
 
     [Space(50)]
     [Header("Jumping")]
@@ -164,6 +173,7 @@ public class Player : MonoBehaviour
             Jump();
             GroundAbove();
             Move();
+            Slamming();
             SetAnim();
             r.velocity = moveDir;
             Flip();
@@ -231,6 +241,9 @@ public class Player : MonoBehaviour
         }
     }
     void Jump() {
+        if (slamming || slammed)
+            return;
+
         jump = JumpInput;
 
         if ((jump && !prevJump) && !isAttacking && !isDamaged) {
@@ -254,19 +267,33 @@ public class Player : MonoBehaviour
     }
     private void Move()
     {
+        if (slamming || slammed)
+            return;
+
         float adjustedHor = 1;
-        if (isGrounded && (isAttacking || isDamaged))
+        if (isDamaged)
         {
-            adjustedHor = 0;
+            if (isGrounded) {
+                adjustedHor = .95f;
+            }
+            moveDir += Vector2.right * (r.velocity.x  <= .01? 0 : r.velocity.x) * adjustedHor;
         }
-        else if (!isGrounded && (!isAttacking || !isDamaged))
+        else
         {
-            adjustedHor = .5f;
+            if (isGrounded && isAttacking)
+            {
+                adjustedHor = 0;
+            }
+            else if (!isGrounded && !isAttacking)
+            {
+                adjustedHor = .5f;
+            }
+            else if (!isGrounded && isAttacking)
+            {
+                adjustedHor = .25f;
+            }
+            moveDir += Vector2.right * HorizontalInput * adjustedHor * speed;
         }
-        else if (!isGrounded && (isAttacking || isDamaged)) {
-            adjustedHor = .25f;
-        }
-        moveDir += Vector2.right * HorizontalInput * adjustedHor * speed;
         if (againstWall && r.velocity.y < 0)
         {
             r.gravityScale = gravScaleOnWall;
@@ -284,12 +311,16 @@ public class Player : MonoBehaviour
             }
             else
             {
-                //Slam
+                if(!isDamaged)
+                    slamming = true;
             }
         }
         moveDir.Set(Mathf.Clamp(moveDir.x, -maxHorSpeed, maxHorSpeed), Mathf.Clamp(moveDir.y, -maxVertSpeed, maxVertSpeed));
     }
     void Attack() {
+        if (slamming || slammed)
+            return;
+
         if (!isAttacking && !isDamaged)
         {
             if (AttackInput)
@@ -310,6 +341,7 @@ public class Player : MonoBehaviour
         spriteAnim.SetBool("AgainstWall", againstWall);
         spriteAnim.SetBool("IsAttacking", isAttacking);
         spriteAnim.SetBool("IsDamaged", isDamaged);
+        spriteAnim.SetBool("IsSlamming", slamming || slammed);
         spriteAnim.SetFloat("yVelocity", r.velocity.y);
         if (isGrounded)
         {
@@ -341,10 +373,6 @@ public class Player : MonoBehaviour
     void InGround() { 
         List<Collider2D> colliders = new List<Collider2D>();
         int num = r.OverlapCollider(groundContact, colliders);
-        print(num);
-        foreach (Collider2D c in colliders) {
-            print(c.name);
-        }
         if (num > 0)
         {
             inGround = true;
@@ -371,6 +399,30 @@ public class Player : MonoBehaviour
         }
         
     }
+    void Slamming() {
+        if (slammed) {
+            slamTimer -= Time.deltaTime;
+            if (slamTimer <= 0) {
+                slammed = false;
+            }
+        }
+        if (slamming)
+        {
+            moveDir.Set(moveDir.x, -slammingSpeed);
+            if (isGrounded)
+            {
+                slammed = true;
+                slamTimer = slamTime;
+                slamming = false;
+                GroundSlam();
+            }
+
+        }
+        if (isDamaged) {
+            slamming = false;
+            slammed = false;
+        }
+    }
     #endregion
 
 
@@ -382,15 +434,15 @@ public class Player : MonoBehaviour
             if (hit.collider != null) {
                 if (hit.collider.tag == "Player") {
                     Player player = hit.collider.GetComponent<Player>();
-                    player.TakeDamage(10);
+                    player.TakeDamage(15);
                 }
             }
         }
     }
-    public void TakeDamage(float _hp) {
+    public void TakeDamage(float damage) {
         if (!isDamaged)
         {
-            HP -= _hp;
+            HP -= damage;
             if (HP <= 0) { Die(); }
             isDamaged = true;
             damageTimer = damageTime;
@@ -420,6 +472,17 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(1);
         GameManager.Instance.players.Remove(this);
         Destroy(gameObject);
+    }
+    void GroundSlam() {
+        slamParticles.Play();
+        List<Collider2D> colliders = new List<Collider2D>();
+        int num = r.OverlapCollider(playerRaycastContact, colliders);
+        foreach (Collider2D collider in colliders) {
+            Player player = collider.GetComponent<Player>();
+            player.TakeDamage(18);
+            Vector2 forceVector = (player.transform.position - feetTransform.transform.position).normalized;
+            player.r.velocity = forceVector * slamImpactPushVel;
+        }
     }
     #endregion
 

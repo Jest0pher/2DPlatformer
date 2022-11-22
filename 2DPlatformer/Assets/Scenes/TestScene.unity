@@ -369,8 +369,8 @@ MonoBehaviour:
   defaultOrthoSize: 6
   minOrthoSize: 3
   maxOrthoSize: 12
-  paddingPercentage: 0.1
-  scalar: 15
+  paddingPercentage: 0.25
+  scalar: 20
   rect:
     serializedVersion: 2
     x: 0

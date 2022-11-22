@@ -164,7 +164,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectorType: 1
   characterSelector: {fileID: 2558042139507924432}
-  renderer: {fileID: 48589740847352995}
+  spriteRenderer: {fileID: 48589740847352995}
   text: {fileID: 3628395310503638295}
 --- !u!212 &48589740847352995
 SpriteRenderer:
@@ -998,6 +998,10 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: a30f0c7c-51db-47f6-9148-5c31d4b02550
     m_ActionName: CharacterSelect/Cancel[/Keyboard/escape,/XInputControllerWindows/buttonEast]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 9c222a69-5882-49c8-8025-3089a0fd1f1e
+    m_ActionName: Player/Down[/Keyboard/s,/XInputControllerWindows/leftStick/down,/Keyboard/downArrow]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: CharacterSelect

@@ -30,6 +30,9 @@ public class CharacterSelector : MonoBehaviour
     }
 
     public void NavigationInput(InputAction.CallbackContext obj) {
+        if (!started)
+            return;
+
         Vector2 vec = obj.ReadValue<Vector2>();
         if (prevHorVal != (int)vec.x)
         {
@@ -91,6 +94,9 @@ public class CharacterSelector : MonoBehaviour
         }
     }
     public void ConfirmInput(InputAction.CallbackContext obj) {
+        if (!started)
+            return;
+
         bool val = obj.ReadValueAsButton();
         if (val && val != prevConfirm) {
             if (currentSelector.selectorType == SelectorType.Button)
@@ -103,6 +109,9 @@ public class CharacterSelector : MonoBehaviour
         prevConfirm = val;
     }
     public void BackInput(InputAction.CallbackContext obj) {
+        if (!started)
+            return;
+
         bool val = obj.ReadValueAsButton();
         if (val && val != prevBack)
         {

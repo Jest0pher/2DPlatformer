@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
     public bool DownInput { get { return downInput; } set { downInput = value; } }
     [SerializeField] private bool attackInput;
     public bool AttackInput { get { return attackInput; } set { attackInput = value; } }
-    
+
     [Space(50)]
     [Header("Surrounding")]
     public bool facingRight;
@@ -56,14 +56,25 @@ public class Player : MonoBehaviour
     public bool slammed;
     public float slamTime;
     float slamTimer;
+    public float slamInAirLimit;
+    float inAirTimer;
     public float slammingSpeed;
     public float slamImpactPushVel;
-    
+
+    [Space(50)]
+    [Header("Hanging")]
+    [SerializeField] BoxCollider2D hangBox;
+    public bool isHanging;
+    public bool canHang;
+    public float hangDelayTime;
+    float hangDelayTimer;
+    Vector2 hangCorner;
+    [SerializeField] GameObject playerHang;
 
     [Space(50)]
     [Header("Jumping")]
     public bool jump;
-    [SerializeField]private bool prevJump;
+    [SerializeField] private bool prevJump;
 
     [Space]
     public int jumps = 2;
@@ -85,7 +96,7 @@ public class Player : MonoBehaviour
     Material healthBarMat;
     public float maxHP = 100;
     [SerializeField] private float hp;
-    public float HP { get { return hp; } set { hp = Mathf.Clamp(value, 0, maxHP);} }
+    public float HP { get { return hp; } set { hp = Mathf.Clamp(value, 0, maxHP); } }
     public bool isDead = false;
     public bool isDamaged = false;
     public float damageTime;
@@ -98,6 +109,7 @@ public class Player : MonoBehaviour
     float attackTimer;
     [SerializeField] BoxCollider2D boxRaycast;
     ContactFilter2D playerRaycastContact;
+    bool prevAttackInput;
 
     [Space(50)]
     [Header("Sprite")]
@@ -112,6 +124,7 @@ public class Player : MonoBehaviour
     [SerializeField] LayerMask groundMask;
     [SerializeField] LayerMask playerMask;
     [SerializeField] LayerMask outerBorder;
+    [SerializeField] LayerMask hangPoint;
 
     [Space(50)]
     [Header("Debug")]
@@ -129,8 +142,6 @@ public class Player : MonoBehaviour
         wallJumpCountRuntime = wallJumps;
         attackTimer = attackTime;
         HP = maxHP;
-        frontTransform.transform.position = box.transform.position + (Vector3)box.size / 2.0f;
-        backTransform.transform.position = box.transform.position - (Vector3)box.size / 2.0f;
         playerRaycastContact = new ContactFilter2D();
         playerRaycastContact.useDepth = false;
         playerRaycastContact.useNormalAngle = false;
@@ -147,11 +158,6 @@ public class Player : MonoBehaviour
         groundContact.useTriggers = false;
         groundContact.layerMask = groundMask;
         groundContact.useLayerMask = true;
-    }
-
-    private void OnDrawGizmos()
-    {
-        //Gizmos.DrawWireCube(box.transform.position, box.size);
     }
 
     // Update is called once per frame
@@ -173,9 +179,10 @@ public class Player : MonoBehaviour
             Jump();
             GroundAbove();
             Move();
+            Hang();
             Slamming();
-            SetAnim();
             r.velocity = moveDir;
+            SetAnim();
             Flip();
             prevVel = r.velocity;
             prevDownInput = DownInput;
@@ -191,9 +198,9 @@ public class Player : MonoBehaviour
     #region Update Functions
     void CheckSurroundings() {
         float surroundDistance = .1f;
-        isGrounded = Physics2D.Raycast(feetTransform.transform.position, Vector3.down, surroundDistance, groundMask) ||
+        isGrounded = (Physics2D.Raycast(feetTransform.transform.position, Vector3.down, surroundDistance, groundMask) ||
                      Physics2D.Raycast(feetTransform.transform.position + Vector3.right * box.size.x / 2, Vector3.down, surroundDistance, groundMask) || 
-                     Physics2D.Raycast(feetTransform.transform.position + Vector3.left * box.size.x / 2, Vector3.down, surroundDistance, groundMask);
+                     Physics2D.Raycast(feetTransform.transform.position + Vector3.left * box.size.x / 2, Vector3.down, surroundDistance, groundMask)) && r.velocity.y == 0;
         Debug.DrawRay(feetTransform.transform.position, Vector3.down * surroundDistance, Color.red);
         Debug.DrawRay(feetTransform.transform.position + Vector3.right * box.size.x / 2, Vector3.down * surroundDistance, Color.red);
         Debug.DrawRay(feetTransform.transform.position + Vector3.left * box.size.x / 2, Vector3.down * surroundDistance, Color.red);
@@ -204,12 +211,21 @@ public class Player : MonoBehaviour
         Debug.DrawRay(topTransform.transform.position, Vector3.up * surroundDistance, Color.red);
         Debug.DrawRay(topTransform.transform.position + Vector3.right * box.size.x / 3, Vector3.up * surroundDistance, Color.red);
         Debug.DrawRay(topTransform.transform.position + Vector3.left * box.size.x / 3, Vector3.up * surroundDistance, Color.red);
-
+        
         if (isGrounded)
         {
-            jumpCountRuntime = jumps;
-            wallJumpCountRuntime = wallJumps;
+            inAirTimer = 0;
+            if (!isHanging )
+            {
+                jumpCountRuntime = jumps;
+                wallJumpCountRuntime = wallJumps;
+            }
         }
+        else { 
+            inAirTimer += Time.deltaTime;
+        }
+
+
         bool isOnOuter = Physics2D.Raycast(feetTransform.transform.position, Vector3.down, surroundDistance, outerBorder) ||
                      Physics2D.Raycast(feetTransform.transform.position + Vector3.right * box.size.x / 2, Vector3.down, surroundDistance, outerBorder) ||
                      Physics2D.Raycast(feetTransform.transform.position + Vector3.left * box.size.x / 2, Vector3.down, surroundDistance, outerBorder);
@@ -217,7 +233,7 @@ public class Player : MonoBehaviour
             groundBox.enabled = true;
         }
 
-        if (groundBox.enabled)
+        if (groundBox.enabled && canHang)
         {
             againstLeftWall = facingRight ? Physics2D.OverlapCircle(backTransform.transform.position, surroundDistance, groundMask) : Physics2D.OverlapCircle(frontTransform.transform.position, surroundDistance, groundMask);
             againstRightWall = facingRight ? Physics2D.OverlapCircle(frontTransform.transform.position, surroundDistance, groundMask) : Physics2D.OverlapCircle(backTransform.transform.position, surroundDistance, groundMask);
@@ -261,6 +277,10 @@ public class Player : MonoBehaviour
                     moveDir += Vector2.up * jumpSpeed;
                 }
             }
+            if (isHanging) {
+                isHanging = false;
+                hangDelayTimer = hangDelayTime;
+            }
         }
 
         prevJump = jump;
@@ -276,7 +296,7 @@ public class Player : MonoBehaviour
             if (isGrounded) {
                 adjustedHor = .95f;
             }
-            moveDir += Vector2.right * (r.velocity.x  <= .01? 0 : r.velocity.x) * adjustedHor;
+            moveDir += Vector2.right * ((r.velocity.x  <= .01 && r.velocity.x >= -.01)? 0 : r.velocity.x) * adjustedHor;
         }
         else
         {
@@ -311,19 +331,24 @@ public class Player : MonoBehaviour
             }
             else
             {
-                if(!isDamaged)
+                if(!isDamaged && inAirTimer > slamInAirLimit && !isHanging)
                     slamming = true;
+            }
+            if (isHanging) {
+                isHanging = false;
+                hangDelayTimer = hangDelayTime;
+                jumpCountRuntime = Mathf.Clamp(jumpCountRuntime - 1, 0, jumps);
             }
         }
         moveDir.Set(Mathf.Clamp(moveDir.x, -maxHorSpeed, maxHorSpeed), Mathf.Clamp(moveDir.y, -maxVertSpeed, maxVertSpeed));
     }
     void Attack() {
-        if (slamming || slammed)
+        if (slamming || slammed || isHanging)
             return;
 
         if (!isAttacking && !isDamaged)
         {
-            if (AttackInput)
+            if (AttackInput && !prevAttackInput)
             {
                 isAttacking = true;
                 attackTimer = attackTime;
@@ -335,6 +360,7 @@ public class Player : MonoBehaviour
                 isAttacking = false;
             }
         }
+        prevAttackInput = AttackInput;
     }
     void SetAnim() {
         spriteAnim.SetBool("IsGrounded", isGrounded);
@@ -342,7 +368,12 @@ public class Player : MonoBehaviour
         spriteAnim.SetBool("IsAttacking", isAttacking);
         spriteAnim.SetBool("IsDamaged", isDamaged);
         spriteAnim.SetBool("IsSlamming", slamming || slammed);
+        spriteAnim.SetBool("IsHanging", isHanging);
         spriteAnim.SetFloat("yVelocity", r.velocity.y);
+        spriteAnim.SetFloat("SpeedMult", r.velocity.x / maxHorSpeed);
+        spriteAnim.SetFloat("HitMult", 1/damageTime);
+        spriteAnim.SetFloat("AttackMult", 1/attackTime);
+
         if (isGrounded)
         {
             if (HorizontalInput != 0)
@@ -372,7 +403,9 @@ public class Player : MonoBehaviour
     }
     void InGround() { 
         List<Collider2D> colliders = new List<Collider2D>();
+        slamCircle.enabled = false;
         int num = r.OverlapCollider(groundContact, colliders);
+        slamCircle.enabled = true;
         if (num > 0)
         {
             inGround = true;
@@ -421,6 +454,46 @@ public class Player : MonoBehaviour
         if (isDamaged) {
             slamming = false;
             slammed = false;
+        }
+    }
+    void Hang() {
+        if (slamming || slammed || isAttacking)
+            return;
+
+        if (canHang)
+        {
+            RaycastHit2D hit = Physics2D.BoxCast(hangBox.transform.position, hangBox.size, 0, Vector2.zero, 0, hangPoint);
+            if (hit.collider != null)
+            {
+                if (hit.collider.GetComponent<HangPoint>().rightSide != facingRight)
+                {
+                    jumpCountRuntime = Mathf.Clamp(jumpCountRuntime + 1, 0, jumps);
+                    canHang = false;
+                    isHanging = true;
+                    hangCorner = (Vector2)hit.collider.bounds.center + ((facingRight ? Vector2.left : Vector2.right) * hit.collider.bounds.size.x / 2.0f) + (Vector2.up * hit.collider.bounds.size.y / 2.0f);
+                }
+            }
+        }
+
+        if (hangDelayTimer > 0) {
+            hangDelayTimer -= Time.deltaTime;
+            if (hangDelayTimer <= 0) {
+                canHang = true;
+            }
+        }
+
+        if (isDamaged) {
+            isHanging = false;
+            hangDelayTimer = hangDelayTime;
+            jumpCountRuntime = Mathf.Clamp(jumpCountRuntime - 1, 0, jumps);
+        }
+
+        if (isHanging) {
+            r.gravityScale = 0;
+            r.velocity = Vector2.zero;
+            moveDir = Vector2.zero;
+            Vector2 translateVec = hangCorner - (Vector2)playerHang.transform.position;
+            transform.position += (Vector3)translateVec;
         }
     }
     #endregion
